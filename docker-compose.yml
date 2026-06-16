@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  web:
+    # Đổi tên image cho pro hơn
+    image: vandaj98/devops-prod-app:${IMAGE_TAG:-latest}
+    ports:
+      - "82:5000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=Dts@1234
+      - DB_NAME=lab_db
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        order: start-first
+
+  db:
+    image: mariadb:10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: Dts@1234
+      MYSQL_DATABASE: lab_db
+    volumes:
+      - db_data:/var/lib/mysql
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+volumes:
+  db_data:
